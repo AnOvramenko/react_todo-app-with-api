@@ -7,14 +7,12 @@ import { TodoForm } from './TodoForm';
 interface Props {
   todo: Todo;
   loading?: boolean;
-  // onChangeTodoStatus?: (id: number) => void;
   onDelete?: (id: number) => void;
   onUpdateTodo?: (todo: Todo) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  // onChangeTodoStatus = () => {},
   onDelete = () => {},
   onUpdateTodo = () => {},
 }) => {
@@ -46,6 +44,7 @@ export const TodoItem: React.FC<Props> = ({
 
       {isUpdate ? (
         <TodoForm
+          key="update"
           inputPlaceHolder="Empty todo will be deleted"
           updateTodo={todo}
           setIsUpdate={setIsUpdate}

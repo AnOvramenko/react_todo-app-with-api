@@ -2,15 +2,17 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import { ErrorMessage, FilterStatus, Todo } from './types/Todo';
-import { deleteTodo, getTodos, updateTodo } from './api/todos';
+import {
+  addTodo,
+  deleteTodo,
+  getTodos,
+  updateTodo,
+  USER_ID,
+} from './api/todos';
 import { TodoList } from './components/TodoList';
 import { HeaderTodoApp } from './components/HeaderTodoApp';
 import { FooterTodoApp } from './components/FooterTodoApp';
-import {
-  filterTodo,
-  // findTodoById,
-  normalizeTodosLoading,
-} from './utils/helpers';
+import { filterTodo, normalizeTodosLoading } from './utils/helpers';
 import { TodoError } from './components/TodoError';
 
 export const App: React.FC = () => {
@@ -38,11 +40,27 @@ export const App: React.FC = () => {
     setErrorMessage(ErrorMessage.DEFAULT);
   };
 
-  const handleAddTodo = (newTodo: Todo) => {
-    setTodos([...todos, newTodo]);
+  const handleAddTodo = (query: string): Promise<void> => {
+    const newTodo = {
+      id: 0,
+      userId: USER_ID,
+      title: query.trim(),
+      completed: false,
+      loading: true,
+    };
+
+    setTempTodo(newTodo);
+
+    return addTodo(newTodo)
+      .then(newTodoFS => {
+        setTodos([...todos, newTodoFS]);
+      })
+      .finally(() => {
+        setTempTodo(null);
+      });
   };
 
-  const handleUpdateTodo = (updatedTodo: Todo) => {
+  const handleUpdateTodo = (updatedTodo: Todo): Promise<void> => {
     const todosWithLoading = todos.map(todo =>
       todo.id === updatedTodo.id
         ? { ...todo, loading: true, title: updatedTodo.title }
@@ -51,7 +69,7 @@ export const App: React.FC = () => {
 
     setTodos(todosWithLoading);
 
-    updateTodo(updatedTodo)
+    return updateTodo(updatedTodo)
       .then(updatedTodoFS => {
         const updatedTodos: Todo[] = todos.map(todo =>
           todo.id === updatedTodoFS.id ? updatedTodo : todo,
@@ -59,8 +77,9 @@ export const App: React.FC = () => {
 
         setTodos(updatedTodos);
       })
-      .catch(() => {
+      .catch(e => {
         setErrorMessage(ErrorMessage.TODO_UPDATE);
+        throw new Error(e);
       })
       .finally(() => setTodos(prevTodos => normalizeTodosLoading(prevTodos)));
   };
@@ -140,7 +159,7 @@ export const App: React.FC = () => {
       return setLoadingTodo;
     });
 
-    deleteTodo(todoId)
+    return deleteTodo(todoId)
       .then(() => {
         setTodos(prev => prev.filter(todo => todo.id !== todoId));
       })
@@ -166,7 +185,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <HeaderTodoApp
-          setTempTodo={setTempTodo}
           onCheckAll={handleCheckAll}
           onAddTodo={handleAddTodo}
           todos={todos}
@@ -177,7 +195,6 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           todos={filteredTodos}
           onUpdateTodo={handleUpdateTodo}
-          // onChangeTodoStatus={handleOnChangeTodoStatus}
           onDelete={handleOnDelete}
         />
 

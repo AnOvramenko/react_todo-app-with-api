@@ -6,9 +6,8 @@ import { TodoForm } from './TodoForm';
 interface Props {
   todos: Todo[];
   onCheckAll: () => void;
-  onAddTodo: (todo: Todo) => void;
+  onAddTodo: (query: string) => Promise<void>;
   setErrorMessage: (msg: ErrorMessage) => void;
-  setTempTodo: (tempTodo: Todo | null) => void;
 }
 
 export const HeaderTodoApp: React.FC<Props> = ({
@@ -16,7 +15,6 @@ export const HeaderTodoApp: React.FC<Props> = ({
   onCheckAll,
   onAddTodo,
   setErrorMessage,
-  setTempTodo,
 }) => {
   return (
     <header className="todoapp__header">
@@ -33,7 +31,6 @@ export const HeaderTodoApp: React.FC<Props> = ({
         />
       )}
       <TodoForm
-        setTempTodo={setTempTodo}
         setErrorMessage={setErrorMessage}
         todos={todos}
         onAddTodo={onAddTodo}
