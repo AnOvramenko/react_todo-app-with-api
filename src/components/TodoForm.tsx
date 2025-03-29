@@ -14,6 +14,7 @@ interface Props {
   setIsUpdate?: (val: boolean) => void;
   onUpdateTodo?: (todo: Todo) => void;
   onDelete?: (id: number) => void;
+  dataCYOption: string;
 }
 
 export const TodoForm: React.FC<Props> = ({
@@ -27,6 +28,7 @@ export const TodoForm: React.FC<Props> = ({
   inputClassName,
   onDelete,
   setTempTodo,
+  dataCYOption,
 }) => {
   const [inputQuery, setInputQuery] = useState(updateTodo?.title || '');
   const [isDisableInput, setIsDisableInput] = useState(false);
@@ -51,8 +53,8 @@ export const TodoForm: React.FC<Props> = ({
           title: inputQuery,
           completed: updateTodo.completed,
         };
+        //mb return promise and after that make available all staff and focus input
 
-        setInputQuery('');
         onUpdateTodo(updatedTodo);
       } else {
         onDelete(updateTodo.id);
@@ -118,7 +120,7 @@ export const TodoForm: React.FC<Props> = ({
     <form onSubmit={handleOnSubmit}>
       <input
         onBlur={handleOnBlur}
-        data-cy="NewTodoField"
+        data-cy={dataCYOption}
         type="text"
         value={inputQuery}
         onChange={event => setInputQuery(event.target.value)}

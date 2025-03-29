@@ -8,7 +8,7 @@ import { HeaderTodoApp } from './components/HeaderTodoApp';
 import { FooterTodoApp } from './components/FooterTodoApp';
 import {
   filterTodo,
-  findTodoById,
+  // findTodoById,
   normalizeTodosLoading,
 } from './utils/helpers';
 import { TodoError } from './components/TodoError';
@@ -44,7 +44,9 @@ export const App: React.FC = () => {
 
   const handleUpdateTodo = (updatedTodo: Todo) => {
     const todosWithLoading = todos.map(todo =>
-      todo.id === updatedTodo.id ? { ...todo, loading: true } : todo,
+      todo.id === updatedTodo.id
+        ? { ...todo, loading: true, title: updatedTodo.title }
+        : todo,
     );
 
     setTodos(todosWithLoading);
@@ -63,14 +65,14 @@ export const App: React.FC = () => {
       .finally(() => setTodos(prevTodos => normalizeTodosLoading(prevTodos)));
   };
 
-  const handleOnChangeTodoStatus = (id: number) => {
-    const currentTodo = findTodoById(todos, id);
+  // const handleOnChangeTodoStatus = (id: number) => {
+  //   const currentTodo = findTodoById(todos, id);
 
-    if (currentTodo) {
-      currentTodo.completed = !currentTodo.completed;
-      handleUpdateTodo(currentTodo);
-    }
-  };
+  //   if (currentTodo) {
+  //     currentTodo.completed = !currentTodo.completed;
+  //     handleUpdateTodo(currentTodo);
+  //   }
+  // };
 
   //i'll redo this
   const handleCheckAll = () => {
@@ -175,7 +177,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           todos={filteredTodos}
           onUpdateTodo={handleUpdateTodo}
-          onChangeTodoStatus={handleOnChangeTodoStatus}
+          // onChangeTodoStatus={handleOnChangeTodoStatus}
           onDelete={handleOnDelete}
         />
 

@@ -39,6 +39,7 @@ export const HeaderTodoApp: React.FC<Props> = ({
         onAddTodo={onAddTodo}
         inputClassName="todoapp__new-todo"
         inputPlaceHolder="What needs to be done?"
+        dataCYOption="NewTodoField"
       />
       {/* Add a todo on form submit */}
     </header>

@@ -7,14 +7,14 @@ import { TodoForm } from './TodoForm';
 interface Props {
   todo: Todo;
   loading?: boolean;
-  onChangeTodoStatus?: (id: number) => void;
+  // onChangeTodoStatus?: (id: number) => void;
   onDelete?: (id: number) => void;
   onUpdateTodo?: (todo: Todo) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  onChangeTodoStatus = () => {},
+  // onChangeTodoStatus = () => {},
   onDelete = () => {},
   onUpdateTodo = () => {},
 }) => {
@@ -39,7 +39,7 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          onChange={() => onChangeTodoStatus(id)}
+          onChange={() => onUpdateTodo({ ...todo, completed: !todo.completed })}
           checked={completed}
         />
       </label>
@@ -52,14 +52,11 @@ export const TodoItem: React.FC<Props> = ({
           onUpdateTodo={onUpdateTodo}
           inputClassName="todo__title-field"
           onDelete={onDelete}
+          dataCYOption="TodoTitleField"
         />
       ) : (
         <>
-          <span
-            data-cy="TodoTitle"
-            className="todo__title"
-            contentEditable={isUpdate}
-          >
+          <span data-cy="TodoTitle" className="todo__title">
             {title}
           </span>
           <button
