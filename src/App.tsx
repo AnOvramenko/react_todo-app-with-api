@@ -22,7 +22,6 @@ export const App: React.FC = () => {
     ErrorMessage.DEFAULT,
   );
   const [filterStatus, setFilterStatus] = useState(FilterStatus.DEFAULT);
-  // const isFocusAddForm = useRef(false);
   const isFocusAddForm = useRef(false);
 
   useEffect(() => {
@@ -68,39 +67,31 @@ export const App: React.FC = () => {
   };
 
   const handleUpdateTodo = (updatedTodo: Todo): Promise<void> => {
-    const todosWithLoading = todos.map(todo =>
-      todo.id === updatedTodo.id
-        ? { ...todo, loading: true, title: updatedTodo.title }
-        : todo,
-    );
+    const getUpdateTodosWithLoading = (prevTodos: Todo[]) =>
+      prevTodos.map(todo =>
+        todo.id === updatedTodo.id
+          ? { ...todo, loading: true, title: updatedTodo.title }
+          : todo,
+      );
 
-    setTodos(todosWithLoading);
+    setTodos(getUpdateTodosWithLoading);
 
     return updateTodo(updatedTodo)
       .then(updatedTodoFS => {
-        const updatedTodos: Todo[] = todos.map(todo =>
-          todo.id === updatedTodoFS.id ? updatedTodo : todo,
-        );
+        const getUpdatedTodos = (prevTodos: Todo[]) =>
+          prevTodos.map(todo =>
+            todo.id === updatedTodoFS.id ? updatedTodo : todo,
+          );
 
-        setTodos(updatedTodos);
+        setTodos(getUpdatedTodos);
       })
-      .catch(e => {
+      .catch(error => {
         setErrorMessage(ErrorMessage.TODO_UPDATE);
-        throw new Error(e);
+        throw new Error(error);
       })
       .finally(() => setTodos(prevTodos => normalizeTodosLoading(prevTodos)));
   };
 
-  // const handleOnChangeTodoStatus = (id: number) => {
-  //   const currentTodo = findTodoById(todos, id);
-
-  //   if (currentTodo) {
-  //     currentTodo.completed = !currentTodo.completed;
-  //     handleUpdateTodo(currentTodo);
-  //   }
-  // };
-
-  //i'll redo this
   const handleCheckAll = () => {
     if (
       todos.every(todo => todo.completed) ||
@@ -110,69 +101,37 @@ export const App: React.FC = () => {
         ...todo,
         completed: !todo.completed,
       }));
-      const todosWithLoading = todos.map(todo => ({ ...todo, loading: true }));
 
-      setTodos(todosWithLoading);
-
-      Promise.all([...todosToChange.map(todo => updateTodo(todo))])
-        .then(setTodos)
-        .catch(() => setErrorMessage(ErrorMessage.TODO_UPDATE))
-        .finally(() => setTodos(prevTodos => normalizeTodosLoading(prevTodos)));
+      todosToChange.forEach(todo => {
+        handleUpdateTodo(todo);
+      });
     } else {
       const unCompletedTodos = todos
         .filter(todo => !todo.completed)
         .map(todo => ({ ...todo, completed: !todo.completed }));
 
-      setTodos(
-        todos.map(todo => {
-          if (!todo.completed) {
-            return { ...todo, loading: true };
-          }
-
-          return todo;
-        }),
-      );
-
-      Promise.all([...unCompletedTodos.map(todo => updateTodo(todo))])
-        .then(updatedTodosFS => {
-          let newTodos: Todo[] = [...todos];
-
-          updatedTodosFS.forEach(todoFS => {
-            newTodos = newTodos.map(todo => {
-              if (todo.id === todoFS.id) {
-                return todoFS;
-              }
-
-              return todo;
-            });
-          });
-          setTodos(newTodos);
-        })
-        .catch(() => setErrorMessage(ErrorMessage.TODO_UPDATE))
-        .finally(() => setTodos(prevTodos => normalizeTodosLoading(prevTodos)));
+      unCompletedTodos.forEach(todo => {
+        handleUpdateTodo(todo);
+      });
     }
   };
 
   const handleOnDelete = (todoId: number) => {
-    setTodos(prev => {
-      const setLoadingTodo = prev.map(todo => {
-        if (todo.id === todoId) {
-          return { ...todo, loading: true };
-        }
+    const getLoadingTodosToDelete = (prevTodos: Todo[]) => {
+      return prevTodos.map(todo =>
+        todo.id === todoId ? { ...todo, loading: true } : todo,
+      );
+    };
 
-        return todo;
-      });
-
-      return setLoadingTodo;
-    });
+    setTodos(getLoadingTodosToDelete);
 
     return deleteTodo(todoId)
       .then(() => {
         setTodos(prev => prev.filter(todo => todo.id !== todoId));
       })
-      .catch(e => {
+      .catch(error => {
         setErrorMessage(ErrorMessage.TODO_DELETE);
-        throw new Error(e);
+        throw new Error(error);
       })
       .finally(() => {
         setTodos(prevTodos => normalizeTodosLoading(prevTodos));
@@ -208,7 +167,6 @@ export const App: React.FC = () => {
           onDelete={handleOnDelete}
         />
 
-        {/* Hide the footer if there are no todos */}
         {!!todos.length && (
           <FooterTodoApp
             todos={todos}

@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const TodoItem: React.FC<Props> = ({ todo, onDelete, onUpdateTodo }) => {
-  const { completed, title, id, loading } = todo;
+  const { completed, title, loading } = todo;
 
   const [isUpdate, setIsUpdate] = useState(false);
   const handleOnDeleteTodo = () => {
@@ -21,7 +21,6 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, onUpdateTodo }) => {
   return (
     <div
       onDoubleClick={() => setIsUpdate(true)}
-      key={id}
       data-cy="Todo"
       className={cn('todo', {
         completed: completed,

@@ -27,7 +27,3 @@ export const updateTodo = ({ completed, id, title }: Todo) => {
     title,
   });
 };
-
-// "title": "Learn JS",
-//   "userId": 4,
-//   "completed": false

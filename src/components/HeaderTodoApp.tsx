@@ -20,7 +20,6 @@ export const HeaderTodoApp: React.FC<Props> = ({
 }) => {
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
       {!!todos.length && (
         <button
           type="button"
@@ -37,7 +36,6 @@ export const HeaderTodoApp: React.FC<Props> = ({
         onAddTodo={onAddTodo}
         isFocusAddForm={isFocusAddForm}
       />
-      {/* Add a todo on form submit */}
     </header>
   );
 };
