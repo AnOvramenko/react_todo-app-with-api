@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ErrorMessage, FilterStatus, Todo } from './types/Todo';
 import {
   addTodo,
@@ -22,6 +22,12 @@ export const App: React.FC = () => {
     ErrorMessage.DEFAULT,
   );
   const [filterStatus, setFilterStatus] = useState(FilterStatus.DEFAULT);
+  // const isFocusAddForm = useRef(false);
+  const isFocusAddForm = useRef(false);
+
+  useEffect(() => {
+    isFocusAddForm.current = false;
+  });
 
   useEffect(() => {
     getTodos()
@@ -57,6 +63,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTempTodo(null);
+        isFocusAddForm.current = true;
       });
   };
 
@@ -163,11 +170,13 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(prev => prev.filter(todo => todo.id !== todoId));
       })
-      .catch(() => {
+      .catch(e => {
         setErrorMessage(ErrorMessage.TODO_DELETE);
+        throw new Error(e);
       })
       .finally(() => {
         setTodos(prevTodos => normalizeTodosLoading(prevTodos));
+        isFocusAddForm.current = true;
       });
   };
 
@@ -188,6 +197,7 @@ export const App: React.FC = () => {
           onCheckAll={handleCheckAll}
           onAddTodo={handleAddTodo}
           todos={todos}
+          isFocusAddForm={isFocusAddForm.current}
           setErrorMessage={setErrorMessage}
         />
 

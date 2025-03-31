@@ -2,20 +2,15 @@
 import React, { useState } from 'react';
 import { Todo } from '../types/Todo';
 import cn from 'classnames';
-import { TodoForm } from './TodoForm';
+import { UpdateTodoForm } from './UpdateTodoForm';
 
 interface Props {
   todo: Todo;
-  loading?: boolean;
-  onDelete?: (id: number) => void;
-  onUpdateTodo?: (todo: Todo) => void;
+  onDelete: (id: number) => Promise<void>;
+  onUpdateTodo: (todo: Todo) => Promise<void>;
 }
 
-export const TodoItem: React.FC<Props> = ({
-  todo,
-  onDelete = () => {},
-  onUpdateTodo = () => {},
-}) => {
+export const TodoItem: React.FC<Props> = ({ todo, onDelete, onUpdateTodo }) => {
   const { completed, title, id, loading } = todo;
 
   const [isUpdate, setIsUpdate] = useState(false);
@@ -43,15 +38,11 @@ export const TodoItem: React.FC<Props> = ({
       </label>
 
       {isUpdate ? (
-        <TodoForm
-          key="update"
-          inputPlaceHolder="Empty todo will be deleted"
+        <UpdateTodoForm
           updateTodo={todo}
           setIsUpdate={setIsUpdate}
           onUpdateTodo={onUpdateTodo}
-          inputClassName="todo__title-field"
           onDelete={onDelete}
-          dataCYOption="TodoTitleField"
         />
       ) : (
         <>

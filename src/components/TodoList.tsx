@@ -1,12 +1,13 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
+import { TempTodoItem } from './TempTodoItem';
 
 interface Props {
   todos: Todo[];
   tempTodo: Todo | null;
-  onDelete: (id: number) => void;
-  onUpdateTodo: (todo: Todo) => void;
+  onDelete: (id: number) => Promise<void>;
+  onUpdateTodo: (todo: Todo) => Promise<void>;
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -27,7 +28,7 @@ export const TodoList: React.FC<Props> = ({
           />
         );
       })}
-      {tempTodo && <TodoItem todo={tempTodo} />}
+      {tempTodo && <TempTodoItem todo={tempTodo} />}
     </section>
   );
 };
