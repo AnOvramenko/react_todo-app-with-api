@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Todo } from '../types/Todo';
-import { USER_ID } from '../api/todos';
+import { useTodoUpdate } from '../Hooks/useTodoUpdate';
+
 interface Props {
   updateTodo: Todo;
   setIsUpdate: (val: boolean) => void;
@@ -14,95 +15,13 @@ export const UpdateTodoForm: React.FC<Props> = ({
   onUpdateTodo,
   onDelete,
 }) => {
-  const [inputQuery, setInputQuery] = useState(updateTodo.title);
-  const [isError, setIsError] = useState(false);
-
-  const focusInput = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleKeyUp = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsUpdate(false);
-      }
-    };
-
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
-
-  useEffect(() => {
-    focusInput.current?.focus();
-  }, [updateTodo]);
-
-  const handleOnSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (inputQuery.trim() === updateTodo.title && !isError) {
-      setIsUpdate(false);
-
-      return;
-    }
-
-    if (inputQuery.trim()) {
-      const updatedTodo = {
-        id: updateTodo.id,
-        userId: USER_ID,
-        title: inputQuery.trim(),
-        completed: updateTodo.completed,
-      };
-
-      onUpdateTodo(updatedTodo)
-        .then(() => {
-          setIsUpdate(false);
-        })
-        .catch(() => {
-          setIsError(true);
-          focusInput.current?.focus();
-        });
-    } else {
-      onDelete(updateTodo.id);
-    }
-  };
-
-  const handleOnBlur = () => {
-    if (isError) {
-      focusInput.current?.focus();
-
-      return;
-    }
-
-    if (inputQuery.trim()) {
-      const updatedTodo = {
-        id: updateTodo.id,
-        userId: USER_ID,
-        title: inputQuery.trim(),
-        completed: updateTodo.completed,
-      };
-
-      if (inputQuery.trim() === updateTodo.title) {
-        setIsUpdate(false);
-
-        return;
-      }
-
-      onUpdateTodo(updatedTodo)
-        .then(() => {
-          setIsUpdate(false);
-          setIsError(false);
-        })
-        .catch(() => {
-          focusInput.current?.focus();
-          setIsError(true);
-        });
-    } else {
-      onDelete(updateTodo.id).catch(() => {
-        setIsError(true);
-      });
-    }
-  };
+  const {
+    handleOnSubmit,
+    handleOnBlur,
+    setInputQuery,
+    inputQuery,
+    focusInput,
+  } = useTodoUpdate(updateTodo, setIsUpdate, onUpdateTodo, onDelete);
 
   return (
     <form onSubmit={handleOnSubmit}>
