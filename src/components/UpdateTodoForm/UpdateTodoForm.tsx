@@ -1,6 +1,6 @@
 import React from 'react';
-import { Todo } from '../types/Todo';
-import { useTodoUpdate } from '../Hooks/useTodoUpdate';
+import { Todo } from '../../types/Todo';
+import { useTodoUpdate } from './useTodoUpdate';
 
 interface Props {
   updateTodo: Todo;

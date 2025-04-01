@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ErrorMessage, FilterStatus, Todo } from '../types/Todo';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ErrorMessage, FilterStatus, Todo } from './types/Todo';
 import {
   addTodo,
   deleteTodo,
   getTodos,
   updateTodo,
   USER_ID,
-} from '../api/todos';
-import { filterTodo, normalizeTodosLoading } from '../utils/helpers';
+} from './api/todos';
+import { filterTodo, normalizeTodosLoading } from './utils/helpers';
 
 export const useTodoController = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -62,7 +62,7 @@ export const useTodoController = () => {
       });
   };
 
-  const handleUpdateTodo = (updatedTodo: Todo): Promise<void> => {
+  const handleUpdateTodo = useCallback((updatedTodo: Todo): Promise<void> => {
     const getUpdateTodosWithLoading = (prevTodos: Todo[]) =>
       prevTodos.map(todo =>
         todo.id === updatedTodo.id ? { ...todo, loading: true } : todo,
@@ -84,7 +84,7 @@ export const useTodoController = () => {
         throw new Error(error);
       })
       .finally(() => setTodos(prevTodos => normalizeTodosLoading(prevTodos)));
-  };
+  }, []);
 
   const handleCheckAll = () => {
     const completeAll = todos.some(todo => !todo.completed);
@@ -97,7 +97,7 @@ export const useTodoController = () => {
     });
   };
 
-  const handleOnDelete = (todoId: number) => {
+  const handleOnDelete = useCallback((todoId: number) => {
     const getLoadingTodosToDelete = (prevTodos: Todo[]) => {
       return prevTodos.map(todo =>
         todo.id === todoId ? { ...todo, loading: true } : todo,
@@ -118,7 +118,7 @@ export const useTodoController = () => {
         setTodos(prevTodos => normalizeTodosLoading(prevTodos));
         isFocusAddForm.current = true;
       });
-  };
+  }, []);
 
   const handleClearAllCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);

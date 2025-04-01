@@ -5,7 +5,7 @@ import { TodoList } from './components/TodoList';
 import { HeaderTodoApp } from './components/HeaderTodoApp';
 import { FooterTodoApp } from './components/FooterTodoApp';
 import { TodoError } from './components/TodoError';
-import { useTodoController } from './Hooks/useTodoController';
+import { useTodoController } from './useTodoController';
 
 export const App: React.FC = () => {
   const {

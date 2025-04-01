@@ -1,16 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { ErrorMessage } from '../types/Todo';
-interface Props {
-  setErrorMessage: (msg: ErrorMessage) => void;
-  onAddTodo: (todo: string) => Promise<void>;
-  isFocusAddForm: boolean;
-}
+import { useEffect, useRef, useState } from 'react';
+import { ErrorMessage } from '../../types/Todo';
 
-export const AddTodoForm: React.FC<Props> = ({
-  onAddTodo,
-  setErrorMessage,
-  isFocusAddForm,
-}) => {
+export const useAddTodoForm = (
+  onAddTodo: (todo: string) => Promise<void>,
+  setErrorMessage: (msg: ErrorMessage) => void,
+  isFocusAddForm: boolean,
+) => {
   const [inputQuery, setInputQuery] = useState('');
   const [isDisableInput, setIsDisableInput] = useState(false);
 
@@ -58,18 +53,11 @@ export const AddTodoForm: React.FC<Props> = ({
       });
   };
 
-  return (
-    <form onSubmit={handleOnSubmit}>
-      <input
-        data-cy="NewTodoField"
-        type="text"
-        value={inputQuery}
-        onChange={event => setInputQuery(event.target.value)}
-        className="todoapp__new-todo"
-        placeholder="What needs to be done?"
-        disabled={isDisableInput}
-        ref={focusInput}
-      />
-    </form>
-  );
+  return {
+    setInputQuery,
+    handleOnSubmit,
+    isDisableInput,
+    focusInput,
+    inputQuery,
+  };
 };

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { USER_ID } from '../api/todos';
-import { Todo } from '../types/Todo';
+import { USER_ID } from '../../api/todos';
+import { Todo } from '../../types/Todo';
 
 export const useTodoUpdate = (
   updateTodo: Todo,

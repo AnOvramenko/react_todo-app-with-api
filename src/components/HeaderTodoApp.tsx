@@ -1,7 +1,7 @@
 import React from 'react';
 import { ErrorMessage, Todo } from '../types/Todo';
 import cn from 'classnames';
-import { AddTodoForm } from './AddTodoForm';
+import { AddTodoForm } from './AddTodoForm/AddTodoForm';
 
 interface Props {
   todos: Todo[];
