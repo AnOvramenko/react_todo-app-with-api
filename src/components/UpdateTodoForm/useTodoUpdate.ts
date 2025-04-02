@@ -10,6 +10,8 @@ export const useTodoUpdate = (
 ) => {
   const [inputQuery, setInputQuery] = useState(updateTodo.title);
   const [isError, setIsError] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const deleteRequestSent = useRef(false);
 
   const focusInput = useRef<HTMLInputElement>(null);
 
@@ -29,9 +31,13 @@ export const useTodoUpdate = (
 
   useEffect(() => {
     focusInput.current?.focus();
-  }, [updateTodo]);
+  }, [updateTodo.id]);
 
   const handleUpdateTodo = () => {
+    if (isProcessing) {
+      return;
+    }
+
     if (inputQuery.trim()) {
       const updatedTodo = {
         id: updateTodo.id,
@@ -48,11 +54,27 @@ export const useTodoUpdate = (
         .catch(() => {
           focusInput.current?.focus();
           setIsError(true);
+        })
+        .finally(() => {
+          setIsProcessing(false);
         });
     } else {
-      onDelete(updateTodo.id).catch(() => {
-        setIsError(true);
-      });
+      if (!deleteRequestSent.current) {
+        deleteRequestSent.current = true;
+        onDelete(updateTodo.id)
+          .then(() => {
+            setIsUpdate(false);
+            setIsError(false);
+          })
+          .catch(() => {
+            setIsError(true);
+            deleteRequestSent.current = false;
+            focusInput.current?.focus();
+          })
+          .finally(() => {
+            setIsProcessing(false);
+          });
+      }
     }
   };
 
@@ -69,7 +91,7 @@ export const useTodoUpdate = (
   };
 
   const handleOnBlur = () => {
-    if (isError) {
+    if (isError || isProcessing) {
       focusInput.current?.focus();
 
       return;

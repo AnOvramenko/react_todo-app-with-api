@@ -62,29 +62,38 @@ export const useTodoController = () => {
       });
   };
 
-  const handleUpdateTodo = useCallback((updatedTodo: Todo): Promise<void> => {
-    const getUpdateTodosWithLoading = (prevTodos: Todo[]) =>
-      prevTodos.map(todo =>
-        todo.id === updatedTodo.id ? { ...todo, loading: true } : todo,
-      );
+  const handleUpdateTodo = useCallback(
+    (updatedTodo: Todo): Promise<void> => {
+      const todoToUpdate = todos.find(todo => todo.id === updatedTodo.id);
 
-    setTodos(getUpdateTodosWithLoading);
+      if (todoToUpdate?.loading) {
+        return Promise.resolve();
+      }
 
-    return updateTodo(updatedTodo)
-      .then(updatedTodoFS => {
-        const getUpdatedTodos = (prevTodos: Todo[]) =>
-          prevTodos.map(todo =>
-            todo.id === updatedTodoFS.id ? updatedTodo : todo,
-          );
+      const getUpdateTodosWithLoading = (prevTodos: Todo[]) =>
+        prevTodos.map(todo =>
+          todo.id === updatedTodo.id ? { ...todo, loading: true } : todo,
+        );
 
-        setTodos(getUpdatedTodos);
-      })
-      .catch(error => {
-        setErrorMessage(ErrorMessage.TODO_UPDATE);
-        throw new Error(error);
-      })
-      .finally(() => setTodos(prevTodos => normalizeTodosLoading(prevTodos)));
-  }, []);
+      setTodos(getUpdateTodosWithLoading);
+
+      return updateTodo(updatedTodo)
+        .then(updatedTodoFS => {
+          const getUpdatedTodos = (prevTodos: Todo[]) =>
+            prevTodos.map(todo =>
+              todo.id === updatedTodoFS.id ? updatedTodo : todo,
+            );
+
+          setTodos(getUpdatedTodos);
+        })
+        .catch(error => {
+          setErrorMessage(ErrorMessage.TODO_UPDATE);
+          throw new Error(error);
+        })
+        .finally(() => setTodos(prevTodos => normalizeTodosLoading(prevTodos)));
+    },
+    [todos],
+  );
 
   const handleCheckAll = () => {
     const completeAll = todos.some(todo => !todo.completed);
@@ -97,28 +106,37 @@ export const useTodoController = () => {
     });
   };
 
-  const handleOnDelete = useCallback((todoId: number) => {
-    const getLoadingTodosToDelete = (prevTodos: Todo[]) => {
-      return prevTodos.map(todo =>
-        todo.id === todoId ? { ...todo, loading: true } : todo,
-      );
-    };
+  const handleOnDelete = useCallback(
+    (todoId: number) => {
+      const todoToDelete = todos.find(todo => todo.id === todoId);
 
-    setTodos(getLoadingTodosToDelete);
+      if (todoToDelete?.loading) {
+        return Promise.resolve();
+      }
 
-    return deleteTodo(todoId)
-      .then(() => {
-        setTodos(prev => prev.filter(todo => todo.id !== todoId));
-      })
-      .catch(error => {
-        setErrorMessage(ErrorMessage.TODO_DELETE);
-        throw new Error(error);
-      })
-      .finally(() => {
-        setTodos(prevTodos => normalizeTodosLoading(prevTodos));
-        isFocusAddForm.current = true;
-      });
-  }, []);
+      const getLoadingTodosToDelete = (prevTodos: Todo[]) => {
+        return prevTodos.map(todo =>
+          todo.id === todoId ? { ...todo, loading: true } : todo,
+        );
+      };
+
+      setTodos(getLoadingTodosToDelete);
+
+      return deleteTodo(todoId)
+        .then(() => {
+          setTodos(prev => prev.filter(todo => todo.id !== todoId));
+        })
+        .catch(error => {
+          setErrorMessage(ErrorMessage.TODO_DELETE);
+          throw new Error(error);
+        })
+        .finally(() => {
+          setTodos(prevTodos => normalizeTodosLoading(prevTodos));
+          isFocusAddForm.current = true;
+        });
+    },
+    [todos],
+  );
 
   const handleClearAllCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);
