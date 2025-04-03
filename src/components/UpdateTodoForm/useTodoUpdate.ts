@@ -15,23 +15,11 @@ export const useTodoUpdate = (
 
   const focusInput = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const handleKeyUp = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsUpdate(false);
-      }
-    };
-
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
-
-  useEffect(() => {
-    focusInput.current?.focus();
-  }, [updateTodo.id]);
+  const handleKeyUp = (event: globalThis.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setIsUpdate(false);
+    }
+  };
 
   const handleUpdateTodo = () => {
     if (isProcessing) {
@@ -58,23 +46,25 @@ export const useTodoUpdate = (
         .finally(() => {
           setIsProcessing(false);
         });
-    } else {
-      if (!deleteRequestSent.current) {
-        deleteRequestSent.current = true;
-        onDelete(updateTodo.id)
-          .then(() => {
-            setIsUpdate(false);
-            setIsError(false);
-          })
-          .catch(() => {
-            setIsError(true);
-            deleteRequestSent.current = false;
-            focusInput.current?.focus();
-          })
-          .finally(() => {
-            setIsProcessing(false);
-          });
-      }
+
+      return;
+    }
+
+    if (!deleteRequestSent.current) {
+      deleteRequestSent.current = true;
+      onDelete(updateTodo.id)
+        .then(() => {
+          setIsUpdate(false);
+          setIsError(false);
+        })
+        .catch(() => {
+          setIsError(true);
+          deleteRequestSent.current = false;
+          focusInput.current?.focus();
+        })
+        .finally(() => {
+          setIsProcessing(false);
+        });
     }
   };
 
@@ -105,6 +95,18 @@ export const useTodoUpdate = (
 
     handleUpdateTodo();
   };
+
+  useEffect(() => {
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  useEffect(() => {
+    focusInput.current?.focus();
+  }, [updateTodo.id]);
 
   return {
     handleOnSubmit,

@@ -16,21 +16,7 @@ export const useTodoController = () => {
     ErrorMessage.DEFAULT,
   );
   const [filterStatus, setFilterStatus] = useState(FilterStatus.DEFAULT);
-  const isFocusAddForm = useRef(false);
-
-  useEffect(() => {
-    if (isFocusAddForm.current) {
-      isFocusAddForm.current = false;
-    }
-  });
-
-  useEffect(() => {
-    getTodos()
-      .then(setTodos)
-      .catch(() => {
-        setErrorMessage(ErrorMessage.TODO_LOAD);
-      });
-  }, []);
+  const isFocusAddForm = useRef(true);
 
   const filteredTodos = useMemo(() => {
     return filterTodo(todos, filterStatus);
@@ -39,6 +25,14 @@ export const useTodoController = () => {
   //handlers
   const setErrorDefault = () => {
     setErrorMessage(ErrorMessage.DEFAULT);
+  };
+
+  const initialFetch = () => {
+    getTodos()
+      .then(setTodos)
+      .catch(() => {
+        setErrorMessage(ErrorMessage.TODO_LOAD);
+      });
   };
 
   const handleAddTodo = (query: string): Promise<void> => {
@@ -145,6 +139,16 @@ export const useTodoController = () => {
       handleOnDelete(todo.id);
     });
   };
+
+  useEffect(() => {
+    if (isFocusAddForm.current) {
+      isFocusAddForm.current = false;
+    }
+  });
+
+  useEffect(() => {
+    initialFetch();
+  }, []);
 
   return {
     setFilterStatus,

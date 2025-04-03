@@ -51,6 +51,7 @@ export const TodoItem: React.FC<Props> = memo(
             <span data-cy="TodoTitle" className="todo__title">
               {title}
             </span>
+
             <button
               type="button"
               className="todo__remove"

@@ -11,25 +11,13 @@ export const useAddTodoForm = (
 
   const focusInput = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const handleKeyUp = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        if (focusInput.current) {
-          focusInput.current.blur();
-        }
+  const handlePressESC = (event: globalThis.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      if (focusInput.current) {
+        focusInput.current.blur();
       }
-    };
-
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
-
-  useEffect(() => {
-    focusInput.current?.focus();
-  }, [isFocusAddForm]);
+    }
+  };
 
   const handleOnSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -52,6 +40,20 @@ export const useAddTodoForm = (
         setIsDisableInput(false);
       });
   };
+
+  useEffect(() => {
+    window.addEventListener('keyup', handlePressESC);
+
+    return () => {
+      window.removeEventListener('keyup', handlePressESC);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isFocusAddForm) {
+      focusInput.current?.focus();
+    }
+  }, [isFocusAddForm]);
 
   return {
     setInputQuery,
