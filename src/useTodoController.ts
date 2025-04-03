@@ -22,7 +22,6 @@ export const useTodoController = () => {
     return filterTodo(todos, filterStatus);
   }, [todos, filterStatus]);
 
-  //handlers
   const setErrorDefault = () => {
     setErrorMessage(ErrorMessage.DEFAULT);
   };
